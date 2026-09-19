@@ -1,0 +1,309 @@
+// Prisma schema for STUDYZ (V1 - Stage 1)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  password         String
+  name             String
+  avatarUrl        String?
+  role             String            @default("USER") // USER, ADMIN
+  onboarded        Boolean           @default(false)
+  currentLevel     Int               @default(1)
+  totalXp          Int               @default(0)
+  currentStreak    Int               @default(0)
+  longestStreak    Int               @default(0)
+  lastStudyDate    DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  profile          Profile?
+  subjects         Subject[]
+  tasks            Task[]
+  studySessions    StudySession[]
+  xpTransactions   XPTransaction[]
+  dailyProgress    DailyProgress[]
+  userAchievements UserAchievement[]
+  notes            Note[]
+  notifications    Notification[]
+  pushSubscriptions PushSubscription[]
+  conversations    Conversation[]
+  attachments      Attachment[]
+  aiUsages         AIUsage[]
+}
+
+model Profile {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grade                  String   @default("Class 12")
+  examGoal               String   @default("JEE Main & Advanced")
+  dailyStudyGoalHours    Float    @default(4.0)
+  preferredFocusMinutes  Int      @default(25)
+  themePreference        String   @default("light")
+  timezone               String   @default("Asia/Kolkata")
+  taskRemindersEnabled   Boolean  @default(true)
+  browserNotificationsEnabled Boolean @default(true)
+  bio                    String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model Subject {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  code          String?
+  color         String         @default("#8C7CFF")
+  icon          String         @default("atom")
+  order         Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  chapters      Chapter[]
+  tasks         Task[]
+  studySessions StudySession[]
+  notes         Note[]
+}
+
+model Chapter {
+  id            String         @id @default(cuid())
+  subjectId     String
+  subject       Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  name          String
+  order         Int            @default(0)
+  difficulty    String         @default("MEDIUM") // EASY, MEDIUM, HARD
+  status        String         @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED
+  progress      Int            @default(0) // 0 - 100
+  notes         String?
+  completedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  tasks         Task[]
+  studySessions StudySession[]
+  chapterNotes  Note[]
+}
+
+model Task {
+  id                      String         @id @default(cuid())
+  userId                  String
+  user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId               String?
+  subject                 Subject?       @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  chapterId               String?
+  chapter                 Chapter?       @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  title                   String
+  description             String?
+  dueDate                 DateTime
+  scheduledTime           String?
+  duration                Int            @default(45) // minutes
+  priority                String         @default("MEDIUM") // LOW, MEDIUM, HIGH
+  status                  String         @default("TODO") // TODO, IN_PROGRESS, COMPLETED
+  timezone                String         @default("Asia/Kolkata")
+  notificationEnabled     Boolean        @default(true)
+  notificationSent        Boolean        @default(false)
+  scheduledNotificationAt DateTime?
+  completedAt             DateTime?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  notifications           Notification[]
+}
+
+model StudySession {
+  id                     String    @id @default(cuid())
+  userId                 String
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId              String?
+  subject                Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  chapterId              String?
+  chapter                Chapter?  @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  durationMinutes        Int
+  plannedDurationMinutes Int
+  xpEarned               Int       @default(0)
+  completed              Boolean   @default(true)
+  notes                  String?
+  sessionDate            DateTime  @default(now())
+  createdAt              DateTime  @default(now())
+}
+
+model XPTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int
+  source      String   // FOCUS_SESSION, TASK_COMPLETED, TASK_UNCOMPLETED, DAILY_GOAL, CHAPTER_COMPLETED, ACHIEVEMENT, STREAK_BONUS
+  description String
+  taskId      String?
+  reversed    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Achievement {
+  id               String            @id
+  code             String            @unique
+  name             String
+  description      String
+  icon             String
+  category         String            // STREAK, XP, FOCUS, TASKS, CHAPTERS
+  requirementType  String
+  requirementValue Int
+  xpReward         Int               @default(50)
+  createdAt        DateTime          @default(now())
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model DailyProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date           String   // YYYY-MM-DD
+  studyMinutes   Int      @default(0)
+  tasksCompleted Int      @default(0)
+  xpEarned       Int      @default(0)
+  goalReached    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId String?
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  chapterId String?
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  title     String
+  content   String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId      String?
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  type        String    // TASK_REMINDER, TASK_COMPLETED, TASK_MISSED, ACHIEVEMENT, SYSTEM
+  title       String
+  message     String
+  link        String?
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  isRead      Boolean   @default(false)
+  status      String    @default("PENDING") // PENDING, SENT, CANCELLED, MISSED
+  channel     String    @default("ALL")     // ALL, IN_APP, BROWSER_PUSH
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+// STUDYZ V2 AI Models
+
+model Conversation {
+  id                 String       @id @default(cuid())
+  userId             String
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title              String       @default("New conversation")
+  lastMessagePreview String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  messages           Message[]
+  attachments        Attachment[]
+  aiUsages           AIUsage[]
+
+  @@index([userId, updatedAt])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String        // USER, ASSISTANT, SYSTEM
+  content        String
+  feedback       String?       // HELPFUL, UNHELPFUL
+  isError        Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+
+  attachments    Attachment[]
+
+  @@index([conversationId, createdAt])
+}
+
+model Attachment {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId   String?
+  conversation     Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  messageId        String?
+  message          Message?      @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  fileName         String
+  mimeType         String
+  size             Int
+  category         String        @default("OTHER") // PDF, IMAGE, DOCUMENT, VIDEO, OTHER
+  storageReference String?
+  previewUrl       String?
+  status           String        @default("READY") // UPLOADING, PROCESSING, READY, ERROR
+  createdAt        DateTime      @default(now())
+}
+
+model AIUsage {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  model          String
+  inputTokens    Int           @default(0)
+  outputTokens   Int           @default(0)
+  createdAt      DateTime      @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+
