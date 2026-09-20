@@ -13,7 +13,8 @@ datasource db {
 model User {
   id               String            @id @default(cuid())
   email            String            @unique
-  password         String
+  password         String?
+  googleId         String?           @unique
   name             String
   avatarUrl        String?
   role             String            @default("USER") // USER, ADMIN
@@ -39,6 +40,7 @@ model User {
   conversations    Conversation[]
   attachments      Attachment[]
   aiUsages         AIUsage[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Profile {
@@ -305,6 +307,17 @@ model SystemSetting {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 

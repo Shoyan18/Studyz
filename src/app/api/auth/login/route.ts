@@ -31,6 +31,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!user.password) {
+      return NextResponse.json(
+        { error: 'This account was registered using Google. Please click "Continue with Google" or use "Forgot password" to set a password.' },
+        { status: 400 }
+      );
+    }
+
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
