@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../src/lib/db';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 export const INITIAL_ACHIEVEMENTS = [
   {
@@ -332,7 +330,7 @@ async function main() {
 
   console.log("Creating default demo user (Shoyan)...");
   const hashedPassword = await bcrypt.hash("password123", 10);
-  
+
   const demoUser = await prisma.user.upsert({
     where: { email: 'shoyan@studyz.app' },
     create: {
