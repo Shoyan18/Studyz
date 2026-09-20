@@ -84,7 +84,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       const scrollHeight = textareaRef.current.scrollHeight;
-      textareaRef.current.style.height = `${Math.min(Math.max(scrollHeight, 44), 160)}px`;
+      textareaRef.current.style.height = `${Math.min(Math.max(scrollHeight, 24), 160)}px`;
     }
   }, [text]);
 
@@ -284,7 +284,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         </div>
 
         {/* Input Text Area */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex items-center">
           <textarea
             ref={textareaRef}
             value={text}
@@ -293,7 +293,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             placeholder={isRecording ? 'Listening...' : dynamicPlaceholder}
             rows={1}
             disabled={disabled}
-            className="w-full bg-transparent resize-none outline-none text-xs sm:text-sm text-charcoal-900 dark:text-white placeholder-charcoal-400 dark:placeholder-[#8e918f] py-1.5 max-h-[160px] overflow-y-auto leading-relaxed"
+            className="w-full bg-transparent resize-none outline-none text-xs sm:text-sm text-charcoal-900 dark:text-white placeholder-charcoal-400 dark:placeholder-[#8e918f] py-1.5 max-h-[160px] overflow-y-auto leading-5 block"
           />
         </div>
 

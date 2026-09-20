@@ -14,7 +14,6 @@ import {
   File,
   Volume2,
   VolumeX,
-  Bot,
   User,
 } from 'lucide-react';
 import { ChatMessage, ChatAttachment } from '@/types';
@@ -224,10 +223,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         <div className="flex items-center gap-2 mb-1.5 select-none">
           <span className="text-xs font-extrabold text-charcoal-900 dark:text-white tracking-tight">
             STUDYZ AI
-          </span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF0EB] dark:bg-coral-950/60 text-coral-600 dark:text-coral-300 border border-[#FFD9CE]/70 dark:border-coral-800/60 flex items-center gap-1">
-            <Bot className="w-3 h-3 text-coral-500" />
-            Study Companion
           </span>
           <span className="text-[10px] font-medium text-charcoal-400 dark:text-gray-400">
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

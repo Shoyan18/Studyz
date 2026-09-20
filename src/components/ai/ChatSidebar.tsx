@@ -275,17 +275,6 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </>
         )}
       </div>
-
-      {/* Footer / AI Status Info */}
-      <div className="p-3 border-t border-[#F3ECE7] dark:border-[#2a2c32] bg-[#FFF5F0]/80 dark:bg-[#151619]/80 text-[11px] text-charcoal-500 dark:text-gray-400 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-semibold text-charcoal-700 dark:text-gray-300">STUDYZ Gemini Engine</span>
-        </div>
-        <span className="text-[10px] font-bold text-coral-600 dark:text-coral-300 bg-[#FFF0EB] dark:bg-coral-950/60 px-2 py-0.5 rounded-full border border-[#FFD9CE]/70 dark:border-coral-800/60">
-          Online
-        </span>
-      </div>
     </aside>
   );
 };

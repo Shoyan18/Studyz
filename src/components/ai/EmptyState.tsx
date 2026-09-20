@@ -150,7 +150,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={placeholderText}
-            className="w-full bg-transparent text-sm sm:text-base font-normal text-white placeholder-gray-400 focus:outline-none"
+            className="w-full bg-transparent text-sm sm:text-base font-normal text-white placeholder-gray-400 focus:outline-none py-0 leading-normal"
           />
         </div>
 
