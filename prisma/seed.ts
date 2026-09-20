@@ -374,11 +374,17 @@ async function main() {
   console.log("Seeding completed successfully!");
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+const isDirectExecution =
+  typeof process !== 'undefined' &&
+  (process.argv?.[1]?.includes('seed') || process.env.npm_lifecycle_event === 'prisma:seed');
+
+if (isDirectExecution) {
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

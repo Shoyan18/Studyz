@@ -183,24 +183,30 @@ export default function AnalyticsPage() {
             </span>
           </div>
 
-          <div className="space-y-4">
-            {subjectDistribution.map((item) => (
-              <div key={item.name} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-charcoal-800 dark:text-white">{item.name}</span>
-                  <span className="text-charcoal-500 dark:text-gray-400">
-                    {item.hours} hrs ({item.percentage}%)
-                  </span>
+          {subjectDistribution.length === 0 ? (
+            <p className="text-xs text-charcoal-400 dark:text-gray-400 py-6 text-center">
+              No study time recorded yet for any subject.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {subjectDistribution.map((item) => (
+                <div key={item.name} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span className="text-charcoal-800 dark:text-white">{item.name}</span>
+                    <span className="text-charcoal-500 dark:text-gray-400">
+                      {item.hours} hrs ({item.percentage}%)
+                    </span>
+                  </div>
+                  <ProgressBar
+                    value={item.percentage}
+                    variant="custom"
+                    color={item.color}
+                    height="md"
+                  />
                 </div>
-                <ProgressBar
-                  value={item.percentage}
-                  variant="custom"
-                  color={item.color}
-                  height="md"
-                />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Recent Study Sessions Table */}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthenticatedUser } from '@/lib/auth';
+import { createCleanStarterSubjects } from '@/lib/curriculum';
 
 export async function POST(req: Request) {
   try {
@@ -41,26 +42,8 @@ export async function POST(req: Request) {
       },
     });
 
-    // Custom subjects if provided
-    if (Array.isArray(subjects) && subjects.length > 0) {
-      // Check if user already has subjects
-      const existingCount = await prisma.subject.count({ where: { userId: user.id } });
-      if (existingCount === 0) {
-        for (let i = 0; i < subjects.length; i++) {
-          const sub = subjects[i];
-          await prisma.subject.create({
-            data: {
-              userId: user.id,
-              name: sub.name,
-              code: sub.code || sub.name.substring(0, 4).toUpperCase(),
-              color: sub.color || '#8C7CFF',
-              icon: sub.icon || 'book-open',
-              order: i + 1,
-            },
-          });
-        }
-      }
-    }
+    // Initialize clean starter subjects and 0% chapters for this user
+    await createCleanStarterSubjects(user.id, subjects);
 
     return NextResponse.json({ success: true, message: 'Onboarding complete' });
   } catch (error) {

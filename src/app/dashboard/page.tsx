@@ -40,6 +40,7 @@ interface DashboardData {
   subjects: SubjectSummary[];
   weeklyHours: Array<{ day: string; date: string; minutes: number; hours: number }>;
   subjectDistribution: Array<{ name: string; color: string; minutes: number; percentage: number }>;
+  recentAchievements?: Array<{ id: string; name: string; description: string; icon?: string }>;
 }
 
 export default function DashboardPage() {
@@ -156,7 +157,7 @@ export default function DashboardPage() {
           <QuickActions onOpenAddTask={() => setIsAddTaskOpen(true)} />
 
           {/* Achievements Preview */}
-          <DashboardAchievements />
+          <DashboardAchievements achievements={data.recentAchievements} />
         </div>
       </div>
 

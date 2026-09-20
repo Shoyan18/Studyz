@@ -54,7 +54,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ user, onOpenMobileMenu }) 
   };
 
   const userName = user?.name || 'Scholar';
-  const levelNumber = user?.levelInfo?.level || user?.totalXp ? Math.max(1, Math.floor(Math.sqrt((user?.totalXp || 0) / 100)) + 1) : 18;
+  const levelNumber = user?.levelInfo?.level ?? (user?.totalXp != null ? Math.max(1, Math.floor(Math.sqrt(user.totalXp / 100)) + 1) : 1);
 
   return (
     <header className="relative z-40 w-full flex items-center justify-between py-3.5 px-4 md:px-6 border-b border-[#F3ECE7]/60 dark:border-[#2e313a]/60 bg-[#FFF9F6]/90 dark:bg-[#131418]/90 backdrop-blur-md transition-colors duration-200">

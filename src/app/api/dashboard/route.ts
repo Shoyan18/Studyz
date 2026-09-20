@@ -174,7 +174,24 @@ export async function GET() {
     const todayProgress = await prisma.dailyProgress.findUnique({
       where: { userId_date: { userId: user.id, date: todayDateStr } },
     });
-    const todayXp = todayProgress?.xpEarned || 120;
+    const todayXp = todayProgress?.xpEarned || 0;
+
+    // Recent unlocked achievements for this user
+    const userAchievements = await prisma.userAchievement.findMany({
+      where: { userId: user.id },
+      include: { achievement: true },
+      orderBy: { unlockedAt: 'desc' },
+      take: 4,
+    });
+
+    const recentAchievements = userAchievements.map((ua) => ({
+      id: ua.achievement.id,
+      code: ua.achievement.code,
+      name: ua.achievement.name,
+      description: ua.achievement.description,
+      icon: ua.achievement.icon,
+      unlockedAt: ua.unlockedAt,
+    }));
 
     return NextResponse.json({
       user: {
@@ -233,6 +250,7 @@ export async function GET() {
       weeklyChartData,
       weeklyHours: weeklyChartData,
       subjectDistribution,
+      recentAchievements,
     });
   } catch (error) {
     console.error('Dashboard API error:', error);

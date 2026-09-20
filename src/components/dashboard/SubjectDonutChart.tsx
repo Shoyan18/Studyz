@@ -17,18 +17,10 @@ interface SubjectDonutChartProps {
 
 export const SubjectDonutChart: React.FC<SubjectDonutChartProps> = ({
   data,
-  totalFormatted = '18h 30m',
+  totalFormatted = '0m',
 }) => {
-  // Ensure we have fallback items if no data yet
-  const displayItems =
-    data && data.length > 0
-      ? data
-      : [
-          { name: 'Physics', color: '#8C7CFF', minutes: 440, percentage: 40 },
-          { name: 'Chemistry', color: '#FF8E72', minutes: 330, percentage: 30 },
-          { name: 'Maths', color: '#FDBA74', minutes: 220, percentage: 20 },
-          { name: 'Other', color: '#E2D9D2', minutes: 110, percentage: 10 },
-        ];
+  const hasData = Array.isArray(data) && data.length > 0 && data.some((item) => item.minutes > 0);
+  const displayItems = hasData ? data : [];
 
   // SVG Donut calculations
   const radius = 50;
@@ -88,21 +80,30 @@ export const SubjectDonutChart: React.FC<SubjectDonutChartProps> = ({
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="space-y-2 w-full max-w-[140px]">
-          {displayItems.map((item, i) => (
-            <div key={i} className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <span
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ backgroundColor: item.color }}
-                />
-                <span className="font-bold text-charcoal-700 dark:text-gray-300 truncate">{item.name}</span>
+        {/* Legend / Empty State */}
+        {hasData ? (
+          <div className="space-y-2 w-full max-w-[140px]">
+            {displayItems.map((item, i) => (
+              <div key={i} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="font-bold text-charcoal-700 dark:text-gray-300 truncate">{item.name}</span>
+                </div>
+                <span className="font-bold text-charcoal-500 dark:text-gray-400">{item.percentage}%</span>
               </div>
-              <span className="font-bold text-charcoal-500 dark:text-gray-400">{item.percentage}%</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center sm:text-left py-2 px-1">
+            <p className="text-xs font-semibold text-charcoal-700 dark:text-gray-300">No study time recorded</p>
+            <p className="text-[11px] text-charcoal-400 dark:text-gray-400 mt-0.5 max-w-[150px]">
+              Complete a focus session to see subject breakdown.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

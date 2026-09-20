@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
 import { createSessionToken, setSessionCookie } from '@/lib/auth';
-import { seedDefaults } from '../../../../../prisma/seed';
 
 export async function POST(req: Request) {
   try {
@@ -63,13 +62,6 @@ export async function POST(req: Request) {
         profile: true,
       },
     });
-
-    // Seed default starter subjects & chapters
-    try {
-      await seedDefaults(user.id);
-    } catch (seedErr) {
-      console.warn('Seed error for new user:', seedErr);
-    }
 
     const token = await createSessionToken({ userId: user.id, email: user.email });
     await setSessionCookie(token);

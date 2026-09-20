@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
 import { createSessionToken, setSessionCookie } from '@/lib/auth';
-import { seedDefaults } from '../../../../../prisma/seed';
 
 export async function POST() {
   try {
@@ -37,8 +36,6 @@ export async function POST() {
         },
         include: { profile: true },
       });
-
-      await seedDefaults(demoUser.id);
     }
 
     const token = await createSessionToken({ userId: demoUser.id, email: demoUser.email });

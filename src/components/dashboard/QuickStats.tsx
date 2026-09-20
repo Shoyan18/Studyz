@@ -19,10 +19,11 @@ export const QuickStats: React.FC<QuickStatsProps> = ({
   levelInfo,
   weeklyStudyTimeFormatted,
 }) => {
-  const level = levelInfo?.level || 18;
-  const currentLevelXp = levelInfo?.currentLevelXp ?? 2450;
-  const nextLevelTotalXp = levelInfo?.nextLevelTotalXp ?? 3000;
-  const progressPercent = levelInfo?.progressPercent ?? 75;
+  const level = levelInfo?.level ?? 1;
+  const currentLevelXp = levelInfo?.currentLevelXp ?? 0;
+  const nextLevelTotalXp = levelInfo?.nextLevelTotalXp ?? 100;
+  const progressPercent = levelInfo?.progressPercent ?? 0;
+  const levelTitle = levelInfo?.title || 'Curious Novice';
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-3.5 mb-4">
@@ -55,7 +56,7 @@ export const QuickStats: React.FC<QuickStatsProps> = ({
               Level {level}
             </div>
             <div className="text-[11px] font-semibold text-charcoal-500 dark:text-gray-400">
-              {levelInfo?.title || 'Grand Scholar'}
+              {levelTitle}
             </div>
           </div>
         </div>
